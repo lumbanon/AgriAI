@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriAI | Sabah Crop Suitability Web GIS</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="app-header">
+        <div>
+            <p class="eyebrow">Sabah AI Crop Suitability Web GIS</p>
+            <h1>AgriAI</h1>
+        </div>
+        <div class="header-actions">
+            <a href="#map-section">Interactive Map</a>
+            <a href="#future-system">Future System</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="overview-section" aria-labelledby="overview-title">
+            <div class="overview-copy">
+                <h2 id="overview-title">Environmental raster lookup for Sabah</h2>
+                <p>
+                    Click or search any location on the map to retrieve soil, climate,
+                    terrain, and land cover variables from PostGIS raster layers.
+                    Switch individual raster layers on the map for Web GIS exploration.
+                </p>
+            </div>
+            <dl class="overview-stats" aria-label="Current system scope">
+                <div>
+                    <dt>12</dt>
+                    <dd>Raster variables</dd>
+                </div>
+                <div>
+                    <dt>PostGIS</dt>
+                    <dd>Raster extraction</dd>
+                </div>
+                <div>
+                    <dt>AI-ready</dt>
+                    <dd>Crop suitability scoring</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section id="map-section" class="map-layout" aria-label="Interactive Sabah map">
+            <aside class="data-panel">
+                <div class="panel-section">
+                    <p class="panel-label">Selected Coordinates</p>
+                    <p id="coordinate-output" class="coordinate-output">No location selected</p>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Environmental Layer</p>
+                    <label class="field-label" for="raster-layer-select">Visualized attribute</label>
+                    <select id="raster-layer-select" class="control-input">
+                        <option value="">No raster layer</option>
+                    </select>
+
+                    <label class="field-label opacity-label" for="opacity-slider">
+                        Opacity <span id="opacity-output">70%</span>
+                    </label>
+                    <input id="opacity-slider" class="opacity-slider" type="range" min="0" max="100" value="70">
+                    <p id="layer-status" class="layer-status">No raster layer selected.</p>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Crop Suitability Heatmap</p>
+                    <label class="field-label" for="crop-heatmap-select">Crop</label>
+                    <select id="crop-heatmap-select" class="control-input"></select>
+                    <div class="heatmap-actions">
+                        <button id="generate-heatmap-button" class="primary-button" type="button">Generate Heatmap</button>
+                        <button id="clear-heatmap-button" class="secondary-button" type="button">Clear</button>
+                    </div>
+                    <div class="heatmap-legend" aria-label="Suitability heatmap legend">
+                        <span><i class="heatmap-swatch high"></i>High</span>
+                        <span><i class="heatmap-swatch moderate"></i>Moderate</span>
+                        <span><i class="heatmap-swatch low"></i>Low</span>
+                    </div>
+                    <p id="heatmap-status" class="layer-status">Select a crop and generate a suitability heatmap.</p>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Layer Legend</p>
+                    <div id="layer-legend" class="legend-list empty-state">
+                        Select a layer to display its legend.
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Layer Information</p>
+                    <div id="layer-info" class="layer-info empty-state">
+                        Select a layer to display metadata.
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Environmental Data</p>
+                    <div id="data-output" class="data-grid empty-state">
+                        Click the map or search coordinates to load raster values.
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <p class="panel-label">Suitability Dashboard</p>
+                    <div id="recommendation-output" class="recommendation-box">
+                        Click the map or search coordinates to calculate Rice, Maize, and Banana suitability.
+                    </div>
+                </div>
+            </aside>
+
+            <div class="map-workspace">
+                <form id="coordinate-search-form" class="coordinate-search-panel" novalidate>
+                    <div class="search-copy">
+                        <p class="panel-label">Coordinate Search</p>
+                        <h2>Go to latitude and longitude</h2>
+                    </div>
+                    <label class="field-label" for="latitude-input">
+                        Latitude
+                        <input
+                            id="latitude-input"
+                            class="control-input"
+                            type="number"
+                            step="any"
+                            inputmode="decimal"
+                            placeholder="5.745519"
+                            required
+                        >
+                    </label>
+                    <label class="field-label" for="longitude-input">
+                        Longitude
+                        <input
+                            id="longitude-input"
+                            class="control-input"
+                            type="number"
+                            step="any"
+                            inputmode="decimal"
+                            placeholder="117.288244"
+                            required
+                        >
+                    </label>
+                    <button class="primary-button" type="submit">Go To Location</button>
+                    <p id="coordinate-search-error" class="form-error" aria-live="polite"></p>
+                </form>
+
+                <div id="map" role="application" aria-label="Leaflet map centered on Sabah"></div>
+            </div>
+        </section>
+
+        <section id="future-system" class="future-section" aria-labelledby="future-title">
+            <h2 id="future-title">Decision support architecture</h2>
+            <div class="future-grid">
+                <article>
+                    <h3>Crop Prediction</h3>
+                    <p>Rule-based scoring now, Random Forest replacement later through the prediction module.</p>
+                </article>
+                <article>
+                    <h3>Crop Information</h3>
+                    <p>Show growing requirements and suitable environmental ranges.</p>
+                </article>
+                <article>
+                    <h3>Analytics</h3>
+                    <p>Summarize suitability distributions with charts and dashboards.</p>
+                </article>
+                <article>
+                    <h3>Administration</h3>
+                    <p>Support dataset updates, raster uploads, and model replacement.</p>
+                </article>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
