@@ -88,21 +88,6 @@ You can also use one connection string:
 $env:DATABASE_URL = "postgresql://postgres:your_password@localhost:5432/agriai"
 ```
 
-Optional raster tile performance settings:
-
-```powershell
-$env:AGRIAI_TILE_CACHE_SIZE = "512"
-$env:AGRIAI_TILE_RENDER_CONCURRENCY = "2"
-$env:AGRIAI_TILE_CACHE_DIR = "C:\Users\User\PycharmProjects\AgriAI\tile_cache"
-```
-
-Use a lower concurrency value if PostgreSQL becomes sluggish during layer switching. Use a larger cache if the server has enough memory and users revisit the same map areas frequently.
-
-Rendered PNG tiles are cached on disk at `tile_cache/{layer}/{z}/{x}/{y}.png`. The first request for a tile still uses PostGIS; later layer switches and map visits return the cached PNG immediately.
-
-The slope and land cover layers render as lower-resolution preview PNG tiles by default because those rasters are high-resolution and expensive to transform on demand. Adjust `tile_pixels` in `backend/main.py` if you need sharper tiles and can accept slower rendering.
-
-Rainfall supports both common annual rainfall storage conventions: raw `mm/year` values such as `2640`, and scaled values such as `26.4` where display should be `2640 mm/year`.
 
 ## Run
 
